@@ -2,8 +2,11 @@
 import sys
 import os
 import re
+import json
 
 in_file = sys.argv[1]
+slow_query_threshold = 10000
+position_file = '/tmp/pg_log_position.json'
 
 #2017-07-27 00:00:05.469 EST [83200] web@192.168.21.53 postgres
 # '%m [%p] %q%u@%h %d '
@@ -37,12 +40,12 @@ def process_query(query):
     print query
     print '------------'
 
-def parse_log(file):
+def parse_log(f):
     query = ''
     slow = False
     current_log_type = 'LOG'
 
-    for line in file.readlines():
+    for line in f.readlines():
         parsed = new_duration_log_line_pattern.search(line) or new_log_line_pattern.search(line) or new_non_session_log_line_pattern.search(line)
         if  parsed:
             log_type =  parsed.group('log_type')
@@ -50,7 +53,7 @@ def parse_log(file):
                 if slow:
                     #process_query(query)
                     slow = False
-                if current_log_type == 'ERROR':
+                if current_log_type in ['ERROR', 'FATAL']:
                     process_query(query)
                     pass
                 new_block = True
@@ -58,19 +61,33 @@ def parse_log(file):
                 current_log_type = log_type
                 if 'query_time' in parsed.groupdict():
                     query_time = float(parsed.group('query_time'))
-                    if query_time > 100000:
+                    if query_time > slow_query_threshold:
                         slow = True
             else:
                 query += line
         else:
             query += line
 
+def save_offset(file_name, position):
+    try:
+        with open(position_file) as fr:
+            _positions = json.load(fr)
+    except:
+            _positions = {}
+    _positions[file_name] = position
+    with open(position_file, 'w') as fw:
+        json.dump(_positions, fw, indent=4, sort_keys=True)
 
-
-
+def load_offset(file_name):
+    try:
+        with open(position_file, 'r') as fr:
+            _positions = json.load(fr)
+            position = _positions[file_name]
+    except:
+        position = 0
+    return position
 
 non_session_llp = llp.split('%q')[0]
-duration_llp = llp + duration_re
 
 non_session_llp_re = convert_to_re(non_session_llp)
 llp_re = convert_to_re(llp)
@@ -80,9 +97,14 @@ new_non_session_log_line_pattern  = re.compile(non_session_llp_re)
 new_log_line_pattern = re.compile(llp_re)
 new_duration_log_line_pattern = re.compile(duration_llp_re)
 
-last_position = 1
+last_position = load_offset(in_file)
+if os.path.getsize(in_file) < last_position:
+    # file truncated?
+    last_position = 0
+    print "truncated!"
 with open(in_file) as f:
     f.seek(last_position)
     parse_log(f)
+    save_offset(in_file, f.tell())
 
 
