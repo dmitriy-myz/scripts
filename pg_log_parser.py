@@ -77,6 +77,11 @@ def parse_log(f):
                 query += line
         else:
             query += line
+    # for final query
+    if slow:
+        process_query(query, current_log_type, query_time)
+    else:
+        process_query(query, current_log_type)
 
 def save_offset(file_name, position):
     try:
