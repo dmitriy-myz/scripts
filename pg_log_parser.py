@@ -3,10 +3,14 @@ import sys
 import os
 import re
 import json
+import smtplib
+from email.mime.text import MIMEText
 
 in_file = sys.argv[1]
 slow_query_threshold = 10000
 position_file = '/tmp/pg_log_position.json'
+receivers =  ['']
+sender = 'root@localhost'
 
 #2017-07-27 00:00:05.469 EST [83200] web@192.168.21.53 postgres
 # '%m [%p] %q%u@%h %d '
@@ -24,6 +28,8 @@ log_type_re = '(?P<log_type>\w+): '
 duration_re = ' duration: (?P<query_time>\d+\.\d+) ms'
 
 new_records = ['LOG', 'ERROR', 'FATAL']
+slow_logs = ''
+error_logs = ''
 
 def escape_re(string):
     for i in ['\\', '[', ']', '+']:
@@ -37,12 +43,15 @@ def convert_to_re(in_llp):
     return '^{}'.format(re)
 
 def process_query(query, log_type, duration = 0):
+    global slow_logs
+    global error_logs
     if duration > slow_query_threshold:
-        print query
-        print '------------'
+        slow_logs += query
+        slow_logs += '\n------------\n\n'
+
     if log_type in ['ERROR', 'FATAL']:
-        print query
-        print '------------'
+        error_logs += query
+        error_logs += '\n------------\n\n'
 
 def parse_log(f):
     query = ''
@@ -88,6 +97,15 @@ def load_offset(file_name):
         position = 0
     return position
 
+def send_email(message, subject, sender, receivers):
+    msg = MIMEText(message, 'plain')
+    msg['Subject'] = subject
+    msg['From']   = sender
+    msg['To'] = receivers[0]
+    smtpObj = smtplib.SMTP('localhost')
+    smtpObj.sendmail(sender, receivers, msg.as_string())
+
+
 non_session_llp = llp.split('%q')[0]
 
 non_session_llp_re = convert_to_re(non_session_llp)
@@ -109,4 +127,7 @@ with open(in_file) as f:
     parse_log(f)
     save_offset(in_file, f.tell())
 
-
+if len(error_logs) > 10:
+    send_email(error_logs, 'error logs on db!', sender, receivers)
+if len(slow_logs) > 10:
+    send_email(slow_logs, 'slow logs on db!', sender, receivers)
