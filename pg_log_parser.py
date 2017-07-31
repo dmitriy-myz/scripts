@@ -36,9 +36,13 @@ def convert_to_re(in_llp):
     re += log_type_re
     return '^{}'.format(re)
 
-def process_query(query):
-    print query
-    print '------------'
+def process_query(query, log_type, duration = 0):
+    if duration > slow_query_threshold:
+        print query
+        print '------------'
+    if log_type in ['ERROR', 'FATAL']:
+        print query
+        print '------------'
 
 def parse_log(f):
     query = ''
@@ -51,18 +55,15 @@ def parse_log(f):
             log_type =  parsed.group('log_type')
             if log_type in new_records:
                 if slow:
-                    #process_query(query)
+                    process_query(query, current_log_type, query_time)
                     slow = False
-                if current_log_type in ['ERROR', 'FATAL']:
-                    process_query(query)
-                    pass
-                new_block = True
-                query = line
+                else:
+                    process_query(query, current_log_type)
                 current_log_type = log_type
+                query = line
                 if 'query_time' in parsed.groupdict():
                     query_time = float(parsed.group('query_time'))
-                    if query_time > slow_query_threshold:
-                        slow = True
+                    slow = True
             else:
                 query += line
         else:
@@ -101,7 +102,8 @@ last_position = load_offset(in_file)
 if os.path.getsize(in_file) < last_position:
     # file truncated?
     last_position = 0
-    print "truncated!"
+    print "file truncation detected!"
+
 with open(in_file) as f:
     f.seek(last_position)
     parse_log(f)
