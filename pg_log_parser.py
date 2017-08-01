@@ -18,13 +18,13 @@ sender = 'root@localhost'
 llp = '%m [%p] %q%u@%h %d '
 pg_log_line_prefix_values = {
     'm': '(?P<date>\d{4}(\-\d{2}){2}) (?P<time>(\d{2}:?){3}\.\d+) (?P<timezone>\w+)',
-    't': '(?P<transaction_id>\d+)',
+    't': '(?P<date>\d{4}(\-\d{2}){2}) (?P<time>(\d{2}:?){3}) (?P<timezone>\w+)',
     'p': '(?P<pid>\d+)',
     'q': '',
     'u': '(?P<user>\w+)',
     'h': '(?P<ip>\S+)',
     'd': '(?P<database>(\w+|\[unknown\]))',
-    'x': '(?P<date>\d{4}(\-\d{2}){2}) (?P<time>(\d{2}:?){3}) (?P<timezone>\w+)'
+    'x': '(?P<transaction_id>\d+)'
 }
 
 log_type_re = '(?P<log_type>\w+): '
