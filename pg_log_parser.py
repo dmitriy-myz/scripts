@@ -125,7 +125,7 @@ last_position = load_offset(in_file)
 if os.path.getsize(in_file) < last_position:
     # file truncated?
     last_position = 0
-    print "file truncation detected!"
+    print("file truncation detected!")
 
 with open(in_file) as f:
     f.seek(last_position)
