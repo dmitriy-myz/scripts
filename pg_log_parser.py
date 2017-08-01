@@ -18,11 +18,13 @@ sender = 'root@localhost'
 llp = '%m [%p] %q%u@%h %d '
 
 m_re = '(?P<date>\d{4}(\-\d{2}){2}) (?P<time>(\d{2}:?){3}\.\d+) (?P<timezone>\w+)'
+t_te = '(?P<transaction_id>\d+)'
 p_re = '(?P<pid>\d+)'
 q_re = ''
 u_re = '(?P<user>\w+)'
 h_re = '(?P<ip>\S+)'
 d_re = '(?P<database>(\w+|\[unknown\]))'
+x_re = '(?P<date>\d{4}(\-\d{2}){2}) (?P<time>(\d{2}:?){3}) (?P<timezone>\w+)'
 
 log_type_re = '(?P<log_type>\w+): '
 duration_re = ' duration: (?P<query_time>\d+\.\d+) ms'
