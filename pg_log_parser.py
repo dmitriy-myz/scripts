@@ -16,15 +16,16 @@ sender = 'root@localhost'
 # '%m [%p] %q%u@%h %d '
 
 llp = '%m [%p] %q%u@%h %d '
-
-m_re = '(?P<date>\d{4}(\-\d{2}){2}) (?P<time>(\d{2}:?){3}\.\d+) (?P<timezone>\w+)'
-t_te = '(?P<transaction_id>\d+)'
-p_re = '(?P<pid>\d+)'
-q_re = ''
-u_re = '(?P<user>\w+)'
-h_re = '(?P<ip>\S+)'
-d_re = '(?P<database>(\w+|\[unknown\]))'
-x_re = '(?P<date>\d{4}(\-\d{2}){2}) (?P<time>(\d{2}:?){3}) (?P<timezone>\w+)'
+pg_log_line_prefix_values = {
+    'm': '(?P<date>\d{4}(\-\d{2}){2}) (?P<time>(\d{2}:?){3}\.\d+) (?P<timezone>\w+)',
+    't': '(?P<transaction_id>\d+)',
+    'p': '(?P<pid>\d+)',
+    'q': '',
+    'u': '(?P<user>\w+)',
+    'h': '(?P<ip>\S+)',
+    'd': '(?P<database>(\w+|\[unknown\]))',
+    'x': '(?P<date>\d{4}(\-\d{2}){2}) (?P<time>(\d{2}:?){3}) (?P<timezone>\w+)'
+}
 
 log_type_re = '(?P<log_type>\w+): '
 duration_re = ' duration: (?P<query_time>\d+\.\d+) ms'
@@ -39,8 +40,9 @@ def escape_re(string):
     return string
 
 def convert_to_re(in_llp):
-    in_llp = escape_re(in_llp)
-    re = in_llp.replace('%m', m_re).replace('%p', p_re).replace('%q', q_re).replace('%u', u_re).replace('%h', h_re).replace('%d', d_re)
+    re = escape_re(in_llp)
+    for pg_llp_value in pg_log_line_prefix_values.keys():
+        re = re.replace('%{}'.format(pg_llp_value), pg_log_line_prefix_values[pg_llp_value])
     re += log_type_re
     return '^{}'.format(re)
 
