@@ -1,0 +1,25 @@
+[Unit]
+Description=Virtual box %I
+After=network.target
+After=vboxdrv.service
+Conflicts=shutdown.target
+
+Documentation=
+
+[Service]
+Type=simple
+Restart=no
+TimeoutSec=180
+KillMode=process
+
+ExecStart=/usr/lib/virtualbox/VBoxHeadless --startvm %I
+ExecStop=/etc/default/vbox_stop.sh %I
+
+WorkingDirectory=/root
+User=root
+Group=root
+
+
+[Install]
+WantedBy=multi-user.target
+
