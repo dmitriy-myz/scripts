@@ -1,0 +1,25 @@
+[Unit]
+Description=Virtual box NAME service
+After=network.target
+After=vboxdrv.service
+Conflicts=shutdown.target
+
+Documentation=
+
+[Service]
+Type=simple
+Restart=no
+TimeoutSec=180
+KillMode=process
+
+ExecStart=/usr/lib/virtualbox/VBoxHeadless --comment 'Name' --startvm 2724647c-49c4-4a73-abad-b60193c7b5d7 --vrde config
+ExecStop=/etc/default/vbox_stop.sh 2724647c-49c4-4a73-abad-b60193c7b5d7
+
+WorkingDirectory=/root
+User=root
+Group=root
+
+
+[Install]
+WantedBy=multi-user.target
+
