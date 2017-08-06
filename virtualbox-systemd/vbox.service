@@ -12,7 +12,7 @@ Restart=no
 TimeoutSec=180
 KillMode=process
 
-ExecStart=/usr/lib/virtualbox/VBoxHeadless --comment 'Name' --startvm 2724647c-49c4-4a73-abad-b60193c7b5d7 --vrde config
+ExecStart=/usr/lib/virtualbox/VBoxHeadless --startvm 2724647c-49c4-4a73-abad-b60193c7b5d7
 ExecStop=/etc/default/vbox_stop.sh 2724647c-49c4-4a73-abad-b60193c7b5d7
 
 WorkingDirectory=/root
