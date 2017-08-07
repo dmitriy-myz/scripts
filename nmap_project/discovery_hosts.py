@@ -3,24 +3,6 @@ import json
 from subprocess import call
 import sys
 
-with open('config.json', 'r') as f:
-    config = json.load(f)
-
-hosts = config['hosts']
-hosts_list = ' '.join(hosts)
-
-ignore_hosts = ','.join(config['ignore_hosts'])
-
-nm = nmap.PortScanner()
-
-discovery = True
-ports = 443
-if discovery:
-    args = '-n -sn -PE -PA22,80,443,30022,1194,1195,1701,5969 --exclude %s' % ignore_hosts
-else:
-    args = '-Pn -p %s --exclude %s' % (ports, ignore_hosts)
-
-
 def discover_port():
     nm.scan(hosts_list, ports, arguments = args)
     for host in nm.all_hosts():
@@ -65,3 +47,25 @@ def discover_hosts():
         call(['git', 'add', 'hosts.json'])
         call(['git', 'commit', '-m', diffs])
         call(['python', 'alert.py', 'email@test.com', 'production hosts info changes', diffs])
+
+with open('config.json', 'r') as f:
+    config = json.load(f)
+
+hosts = config['hosts']
+hosts_list = ' '.join(hosts)
+
+ignore_hosts = ','.join(config['ignore_hosts'])
+
+nm = nmap.PortScanner()
+
+discovery = True
+ports = 443
+if discovery:
+    args = '-n -sn -PE -PA22,80,443,30022,1194,1195,1701,5969 --exclude %s' % ignore_hosts
+    discover_hosts()
+else:
+    args = '-Pn -p %s --exclude %s' % (ports, ignore_hosts)
+    discover_port()
+
+
+
