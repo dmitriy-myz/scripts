@@ -3,7 +3,8 @@ import json
 from subprocess import call
 import sys
 
-def discover_port():
+def discover_port(ports):
+    msg = ''
     nm.scan(hosts_list, ports, arguments = args)
     for host in nm.all_hosts():
         for proto in nm[host].all_protocols():
@@ -12,7 +13,7 @@ def discover_port():
             for port in lport:
                 if nm[host][proto][port]['state'] not in ['closed', 'filtered']:
                     host_n_port = '%s:%s' %(host, port)
-                    alert_msg += host_n_port + '\n'
+                    msg += host_n_port + '\n'
                     #alert_msg += '%s %s:%s state: %s\n' % (proto,host,port,nm[host][proto][port]['state']) #(host, port, nm[host][proto][port]['state'])
     print(msg)
 
@@ -65,8 +66,8 @@ if discovery:
     args = '-n -sn -PE -PA22,80,443,30022,1194,1195,1701,5969 --exclude %s' % ignore_hosts
     discover_hosts()
 else:
-    args = '-Pn -p %s --exclude %s' % (ports, ignore_hosts)
-    discover_port()
+    args = '-Pn --exclude %s' % ignore_hosts
+    discover_port(ports)
 
 
 
