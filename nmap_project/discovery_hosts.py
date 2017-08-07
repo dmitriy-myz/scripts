@@ -14,7 +14,7 @@ def discover_port():
                     host_n_port = '%s:%s' %(host, port)
                     alert_msg += host_n_port + '\n'
                     #alert_msg += '%s %s:%s state: %s\n' % (proto,host,port,nm[host][proto][port]['state']) #(host, port, nm[host][proto][port]['state'])
-    print msg
+    print(msg)
 
 def discover_hosts():
     nm.scan(hosts_list, arguments=args)
@@ -44,9 +44,10 @@ def discover_hosts():
         with open('hosts.json', 'w') as f:
             json.dump(up_hosts, f, indent=4, sort_keys=True)
 
-        call(['git', 'add', 'hosts.json'])
-        call(['git', 'commit', '-m', diffs])
-        call(['python', 'alert.py', 'email@test.com', 'production hosts info changes', diffs])
+        #call(['git', 'add', 'hosts.json'])
+        #call(['git', 'commit', '-m', diffs])
+        #call(['python', 'alert.py', 'email@test.com', 'production hosts info changes', diffs])
+        print(diffs)
 
 with open('config.json', 'r') as f:
     config = json.load(f)
