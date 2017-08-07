@@ -61,7 +61,7 @@ ignore_hosts = ','.join(config['ignore_hosts'])
 nm = nmap.PortScanner()
 
 discovery = True
-ports = 443
+ports = "443"
 if discovery:
     args = '-n -sn -PE -PA22,80,443,30022,1194,1195,1701,5969 --exclude %s' % ignore_hosts
     discover_hosts()
