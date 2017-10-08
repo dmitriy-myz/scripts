@@ -10,7 +10,8 @@ Written on bash
 4. awk
 
 ## Installation
-copy webtail.sh to any directory. If you want to install globaly copy to directory in you'r PATH. E.g. /usr/bin
+copy webtail.sh to any directory.  
+If you want to install globaly copy to directory in you'r PATH. E.g. `/usr/bin`
 
 
 ## Usage
