@@ -51,6 +51,19 @@ service vbox@name stop
 
 ## Limitation
 
-1. Vm name should not contain whitespace. If so, use UUID insteam vm name.
+1. Vm name should not contain whitespaces. If so, use UUID insteam vm name. Instruction for pretty name below
 2. Vm should hanlde ACPI power buton signal to shutdown correctly
 3. Vm should stop in 180 s after ACPI power button signal (or will be killed by systemd)
+
+
+## Pretty name for vm with whitespaces
+
+1. Edit `vbox.service`, set correct UUID, name, user, etc
+2. Rename to you preferred name
+3. Copy to `/etc/systemd/system/`
+4. Run
+```bash
+systemctl daemon-reload
+systemctl enable YOUR_SERVICE_NAME
+```
+
