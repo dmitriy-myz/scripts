@@ -21,6 +21,7 @@ Run
 ```bash
 vboxmanage list vms
 ```
+
 get name or uuid from output  
 Run 
 ```bash
@@ -32,6 +33,7 @@ start:
 ````bash
 systemtl start vbox@name
 ```
+
 or
 ```bash
 service vbox@name start
@@ -41,6 +43,7 @@ stop:
 ````bash
 systemctl stop vbox@name
 ```
+
 or
 ```bash
 service vbox@name stop
