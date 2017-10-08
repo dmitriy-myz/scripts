@@ -1,6 +1,6 @@
 ## virtualbox-systemd
 
-Systemd unit for Virtualbox vm's
+Systemd unit for Virtualbox vm's.  
 Can start and stop vm's as a linux service
 
 ## Installing
@@ -16,12 +16,12 @@ systemctl daemon-reload
 
 ## Usage
 
-Add new vm to autostart/autostop
+Add new vm to autostart/autostop  
 Run
 ```bash
 vboxmanage list vms
 ```
-get name or uuid from output
+get name or uuid from output  
 Run 
 ```bash
 systemctl enable vbox@"name"
@@ -46,3 +46,8 @@ or
 service vbox@name stop
 ```
 
+## Limitation
+
+1. Vm name should not contain whitespace. If so, use UUID insteam vm name.
+2. Vm should hanlde ACPI power buton signal to shutdown correctly
+3. Vm should stop in 180 s after ACPI power button signal (or will be killed by systemd)
