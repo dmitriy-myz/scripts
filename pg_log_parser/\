@@ -1,8 +1,0 @@
-# Pg log parser
-
-## Installation
-Copy `pg_log_parser.py` to `/opt/scripts/`
-edit `pg_log_parser.py`
-
-Set up log line prefix, email from, receivers
-##
