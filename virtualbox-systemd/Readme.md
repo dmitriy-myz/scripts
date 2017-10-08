@@ -30,7 +30,7 @@ systemctl status vbox@"name"
 ```
 
 start:
-````bash
+```bash
 systemtl start vbox@name
 ```
 
@@ -40,7 +40,7 @@ service vbox@name start
 ```
 
 stop:
-````bash
+```bash
 systemctl stop vbox@name
 ```
 
