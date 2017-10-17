@@ -32,7 +32,7 @@ def escape_re(string):
     return string
 
 def convert_to_grok(in_format):
-    re = escape_re(in_llp)
+    re = escape_re(in_format)
     values = nginx_spec_values.keys()
     values.sort(reverse=True)
     for pg_llp_value in values:
@@ -40,4 +40,4 @@ def convert_to_grok(in_format):
         print pg_llp_value
     return '{}'.format(re)
 
-print convert_to_re(a)
+print convert_to_grok(a)
