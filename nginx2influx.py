@@ -18,12 +18,12 @@ nginx_spec_values = {
   '$upstream_status': '((?P<upstream_status>\d+)|-)',
   '$remote_addr': '(?P<remote_addr>\S+)',
   # TODO fix
-  '$http_x_forwarded_for': '((?P<http_x_forwarded_for1>\S+)|-)',
+  '$http_x_forwarded_for': '(((?P<http_x_forwarded_for>[0-9a-f:.]+)(, (?P<http_x_forwarded_for1>[0-9a-f:.]+))*)|-)',
   # TODO fix
-  '$proxy_add_x_forwarded_for': '(?P<proxy_add_x_forwarded_for>\S+)',
+  '$proxy_add_x_forwarded_for': '(?P<proxy_add_x_forwarded_for>[0-9a-f:.]+)(, (?P<proxy_add_x_forwarded_for1>[0-9a-f:.]+))*',
 
   '$time_local': '(?P<date>\d{1,2}/\w+/\d{4}):(?P<time>\d{1,2}:\d{1,2}:\d{1,2}) (?P<timezone>[+\-]?\d+)',
-  '$upstream_response_time': '(?P<upstream_response_time>\d+\.\d+)',
+  '$upstream_response_time': '((?P<upstream_response_time>\d+\.\d+)|-)',
   '$request_uri': '(?P<request_uri>\S+)',
   '$request_time': '(?P<request_time>\d+\.\d+)',
   '$request_method': '(?P<request_method>\w+)',
@@ -31,7 +31,7 @@ nginx_spec_values = {
   '$status': '((?P<status>\d+)|-)',
   '$bytes_sent': '((?P<bytes_sent>\d+)|-)',
   '$http_referer': '((?P<http_referer>\S+)|-)',
-  '$http_user_agent': '(?P<user_agent>[A-Za-z0-9.();,/\- ]+)',
+  '$http_user_agent': '(?P<user_agent>[A-Za-z0-9.();:+*&$,/\-_\[\] \']+)',
   '$http_host': '((?P<http_host>\S+)|-)',
   '$host': '((?P<host>\S+)|-)',
   '$geoip_country_code': '((?P<geoip_country_code>\w+)|-)',
@@ -81,9 +81,9 @@ def parse_log(f):
 nginx_log_string = a
 nginx_log_re = '^{}$'.format(convert_to_re(nginx_log_string))
 
+nginx_log_pattern = re.compile(nginx_log_re)
 """
 print nginx_log_re
-nginx_log_pattern = re.compile(nginx_log_re)
 parsed = nginx_log_pattern.search(l)
 print parsed.groupdict()
 """
