@@ -8,9 +8,9 @@ in_file = sys.argv[1]
 position_file = 'log_position.json'
 
 # 
-#a = '''$remote_addr - $host - $server_protocol - $remote_user [$time_local] "$request_method" "$request_uri" $status $bytes_sent "$upstream_addr" "$upstream_response_time" "$http_referer" "$http_user_agent" "$geoip_country_code"'''
+#nginx_log_format = '''$remote_addr - $host - $server_protocol - $remote_user [$time_local] "$request_method" "$request_uri" $status $bytes_sent "$upstream_addr" "$upstream_response_time" "$http_referer" "$http_user_agent" "$geoip_country_code"'''
 # log_format main1
-a = '''$remote_addr\t[$time_local]\t$status\t$upstream_addr\t$upstream_status\t$http_host\t$request\t$http_referer\t$http_user_agent\t$http_x_forwarded_for\t$proxy_add_x_forwarded_for\t-\t$request_time-$upstream_response_time\t$geoip_country_code'''
+nginx_log_format = '''$remote_addr\t[$time_local]\t$status\t$upstream_addr\t$upstream_status\t$http_host\t$request\t$http_referer\t$http_user_agent\t$http_x_forwarded_for\t$proxy_add_x_forwarded_for\t-\t$request_time-$upstream_response_time\t$geoip_country_code'''
 
 
 nginx_spec_values = {
@@ -18,9 +18,11 @@ nginx_spec_values = {
   '$upstream_status': '((?P<upstream_status>\d+)|-)',
   '$remote_addr': '(?P<remote_addr>\S+)',
   # TODO fix
-  '$http_x_forwarded_for': '(((?P<http_x_forwarded_for>[0-9a-f:.]+)(, (?P<http_x_forwarded_for1>[0-9a-f:.]+))*)|-)',
+  #'$http_x_forwarded_for': '(((?P<http_x_forwarded_for>[0-9a-f:.]+)(, (?P<http_x_forwarded_for1>[0-9a-f:.]+))*)|-)',
+  '$http_x_forwarded_for': '(((?P<http_x_forwarded_for>\S+)(, (?P<http_x_forwarded_for1>\S+))*)|-)',
   # TODO fix
-  '$proxy_add_x_forwarded_for': '(?P<proxy_add_x_forwarded_for>[0-9a-f:.]+)(, (?P<proxy_add_x_forwarded_for1>[0-9a-f:.]+))*',
+  #'$proxy_add_x_forwarded_for': '(?P<proxy_add_x_forwarded_for>[0-9a-f:.]+)(, (?P<proxy_add_x_forwarded_for1>[0-9a-f:.]+))*',
+  '$proxy_add_x_forwarded_for': '(?P<proxy_add_x_forwarded_for>[0-9a-f:.]+)(, (?P<proxy_add_x_forwarded_for1>\S+))*',
 
   '$time_local': '(?P<date>\d{1,2}/\w+/\d{4}):(?P<time>\d{1,2}:\d{1,2}:\d{1,2}) (?P<timezone>[+\-]?\d+)',
   '$upstream_response_time': '((?P<upstream_response_time>\d+\.\d+)|-)',
@@ -30,8 +32,8 @@ nginx_spec_values = {
   '$request': '(((?P<request_method>\w+) (?P<request_uri>\S+) HTTP/(?P<http_version>\d+\.\d+))|-)',
   '$status': '((?P<status>\d+)|-)',
   '$bytes_sent': '((?P<bytes_sent>\d+)|-)',
-  '$http_referer': '((?P<http_referer>\S+)|-)',
-  '$http_user_agent': '(?P<user_agent>[A-Za-z0-9.();:+*&$,/\-_\[\] \']+)',
+  '$http_referer': '((?P<http_referer>\S+)|-)?',
+  '$http_user_agent': '(?P<user_agent>[\\\\A-Za-z0-9.();:+*&=?#^`$%~!@,/\-_\[\] \']+)',
   '$http_host': '((?P<http_host>\S+)|-)',
   '$host': '((?P<host>\S+)|-)',
   '$geoip_country_code': '((?P<geoip_country_code>\w+)|-)',
@@ -73,13 +75,26 @@ def load_offset(file_name):
     return position
 
 def parse_log(f):
+    request_time = 0.0
+    n_requests = 0
+    statuses = {}
     for line in f.readlines():
         parsed = nginx_log_pattern.search(line)
-        print parsed.groupdict()
+        if parsed is None:
+            #print 'can not parse line: \n {}'.format(line)
+            pass
+        else:
+            pass
+            status = parsed.group('status')
+            if status not in statuses:
+                statuses[status] = {'time': 0.0, 'count': 0}
+            statuses[status]['time'] += float(parsed.group('request_time'))
+            statuses[status]['count'] += 1
+#            print parsed.groupdict()
     pass
+    print statuses
 
-nginx_log_string = a
-nginx_log_re = '^{}$'.format(convert_to_re(nginx_log_string))
+nginx_log_re = '^{}$'.format(convert_to_re(nginx_log_format))
 
 nginx_log_pattern = re.compile(nginx_log_re)
 """
