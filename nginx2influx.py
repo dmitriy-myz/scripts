@@ -3,6 +3,8 @@ import sys
 import os
 import re
 import json
+from dateutil import parser
+import datetime
 
 in_file = sys.argv[1]
 position_file = 'log_position.json'
@@ -24,7 +26,7 @@ nginx_spec_values = {
   #'$proxy_add_x_forwarded_for': '(?P<proxy_add_x_forwarded_for>[0-9a-f:.]+)(, (?P<proxy_add_x_forwarded_for1>[0-9a-f:.]+))*',
   '$proxy_add_x_forwarded_for': '(?P<proxy_add_x_forwarded_for>[0-9a-f:.]+)(, (?P<proxy_add_x_forwarded_for1>\S+))*',
 
-  '$time_local': '(?P<date>\d{1,2}/\w+/\d{4}):(?P<time>\d{1,2}:\d{1,2}:\d{1,2}) (?P<timezone>[+\-]?\d+)',
+  '$time_local': '(?P<time>\d{1,2}/\w+/\d{4}:\d{1,2}:\d{1,2}:\d{1,2} [+\-]?\d+)',
   '$upstream_response_time': '((?P<upstream_response_time>\d+\.\d+)|-)',
   '$request_uri': '(?P<request_uri>\S+)',
   '$request_time': '(?P<request_time>\d+\.\d+)',
@@ -78,12 +80,17 @@ def parse_log(f):
     request_time = 0.0
     n_requests = 0
     statuses = {}
+    unparsed_lines = 0
+    start_time = None
     for line in f.readlines():
         parsed = nginx_log_pattern.search(line)
         if parsed is None:
             #print 'can not parse line: \n {}'.format(line)
+            unparsed_lines += 1
             pass
         else:
+            if not start_time:
+                start_time = parser.parse(parsed.group('time'),fuzzy=True)
             pass
             status = parsed.group('status')
             if status not in statuses:
@@ -91,8 +98,14 @@ def parse_log(f):
             statuses[status]['time'] += float(parsed.group('request_time'))
             statuses[status]['count'] += 1
 #            print parsed.groupdict()
-    pass
+    end_time = parser.parse(parsed.group('time'),fuzzy=True)
+    print start_time
+    print end_time
+    processed_time = end_time - start_time
+    for status in statuses.keys():
+        statuses[status]['rps'] = statuses[status]['count']/processed_time.seconds
     print statuses
+    print 'unparsed lines: {}'.format(unparsed_lines)
 
 nginx_log_re = '^{}$'.format(convert_to_re(nginx_log_format))
 
