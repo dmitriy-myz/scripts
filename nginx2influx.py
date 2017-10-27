@@ -29,18 +29,18 @@ nginx_log_format = '''$remote_addr\t[$time_local]\t$status\t$upstream_addr\t$ups
 nginx_time_format = '%d/%b/%Y:%H:%M:%S'
 nginx_spec_values = {
   '$upstream_addr': '(?P<upstream_addr>\S+)',
-  '$upstream_status': '((?P<upstream_status>\d+)|-)',
+  '$upstream_status': '((?P<upstream_status>\d{3})|-)',
   '$remote_addr': '(?P<remote_addr>\S+)',
   '$http_x_forwarded_for': '(((?P<http_x_forwarded_for>\S+)(, (?P<http_x_forwarded_for1>\S+))*)|-)',
   '$proxy_add_x_forwarded_for': '(?P<proxy_add_x_forwarded_for>[0-9a-f:.]+)(, (?P<proxy_add_x_forwarded_for1>\S+))*',
 
-  '$time_local': '(?P<time>\d{1,2}/\w+/\d{4}:\d{1,2}:\d{1,2}:\d{1,2}) [+\-]?\d+',
+  '$time_local': '(?P<time>\d{2}/\w+/\d{4}:\d{2}:\d{2}:\d{2}) [+\-]?\d{4}',
   '$upstream_response_time': '((?P<upstream_response_time>\d+\.\d+)|-)',
   '$request_uri': '(?P<request_uri>\S+)',
   '$request_time': '(?P<request_time>\d+\.\d+)',
   '$request_method': '(?P<request_method>\w+)',
   '$request': '(((?P<request_method>\w+) (?P<request_uri>\S+) HTTP/(?P<http_version>\d+\.\d+))|-)',
-  '$status': '((?P<status>\d+)|-)',
+  '$status': '((?P<status>\d{3})|-)',
   '$bytes_sent': '((?P<bytes_sent>\d+)|-)',
   '$http_referer': '((?P<http_referer>\S+)|-)?',
   '$http_user_agent': '(?P<user_agent>[\\\\A-Za-z0-9.();:+*&=?#^`$%~!@,/\-_\[\] \']+)',
@@ -109,7 +109,6 @@ def parse_log(f, filename):
             logger.debug(parsed.groupdict())
             end_time = datetime.datetime.strptime(parsed.group('time'), nginx_time_format)
     if start_time:
-        end_time = start_time
         logger.info('start time in log: %s', start_time)
         logger.info('finish time in log: %s', end_time)
 
