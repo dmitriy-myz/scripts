@@ -106,9 +106,10 @@ def parse_log(f, filename):
                 statuses[status] = {'time': 0.0, 'count': 0}
             statuses[status]['time'] += float(parsed.group('request_time'))
             statuses[status]['count'] += 1
-            logger.debug(parsed.groupdict())
-            end_time = datetime.datetime.strptime(parsed.group('time'), nginx_time_format)
+            string_end_time = parsed.group('time')
+            #logger.debug(parsed.groupdict())
     if start_time:
+        end_time = datetime.datetime.strptime(string_end_time, nginx_time_format)
         logger.info('start time in log: %s', start_time)
         logger.info('finish time in log: %s', end_time)
 
