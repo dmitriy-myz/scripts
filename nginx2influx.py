@@ -11,7 +11,7 @@ import glob
 
 
 # replace this with your nginx log format string
-nginx_log_format = '''$remote_addr\t[$time_local]\t$status\t$upstream_addr\t$upstream_status\t$http_host\t$request\t$http_referer\t$http_user_agent\t$http_x_forwarded_for\t$proxy_add_x_forwarded_for\t$-\t$request_time-$upstream_response_time\t$geoip_country_code'''
+nginx_log_format = '''$remote_addr\t[$time_local]\t$status\t$upstream_addr\t$upstream_status\t$http_host\t$request\t$http_referer\t$http_user_agent\t$http_x_forwarded_for\t$proxy_add_x_forwarded_for\t-\t$request_time-$upstream_response_time\t$geoip_country_code'''
 
 
 
@@ -59,7 +59,7 @@ def escape_re(string):
 def convert_to_re(in_format):
     re = escape_re(in_format)
     values = nginx_spec_values.keys()
-    sorted(values, reverse=True)
+    values.sort(reverse=True)
     for nginx_value in values:
         re = re.replace('{}'.format(nginx_value), nginx_spec_values[nginx_value])
     return '{}'.format(re)
@@ -92,6 +92,7 @@ def parse_log(f, filename):
     start_time = None
     for line in f.readlines():
         parsed = nginx_log_pattern.match(line)
+        
         if parsed is None:
             logger.info('can not parse line: %s', line)
             unparsed_lines += 1
@@ -106,6 +107,7 @@ def parse_log(f, filename):
             statuses[status]['count'] += 1
             string_end_time = parsed.group('time')
             #logger.debug(parsed.groupdict())
+        
     if start_time:
         end_time = datetime.datetime.strptime(string_end_time, nginx_time_format)
         logger.info('start time in log: %s', start_time)
@@ -154,6 +156,8 @@ channel = logging.StreamHandler(sys.stdout)
 channel.setLevel(log_level)
 channel.setFormatter(formatter)
 logger.addHandler(channel)
+
+logger.info(nginx_log_re)
 
 in_files = []
 for in_file in args.files:
