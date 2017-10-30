@@ -59,8 +59,9 @@ def escape_re(string):
 def convert_to_re(in_format):
     re = escape_re(in_format)
     values = nginx_spec_values.keys()
-    values.sort(reverse=True)
+    values = sorted(values,reverse=True)
     for nginx_value in values:
+        logger.debug(nginx_value)
         re = re.replace('{}'.format(nginx_value), nginx_spec_values[nginx_value])
     return '{}'.format(re)
 
@@ -90,7 +91,7 @@ def parse_log(f, filename):
     statuses = {}
     unparsed_lines = 0
     start_time = None
-    for line in f.readlines():
+    for line in f:
         parsed = nginx_log_pattern.match(line)
         
         if parsed is None:
@@ -138,27 +139,28 @@ def parse_arg():
     return args
 
 
+def init_logger():
+    global logger
+    logger = logging.getLogger(__name__)
+    log_level = getattr(logging, args.loglevel.upper())
+    logger.setLevel(log_level)
+    formatter = logging.Formatter('%(asctime)s: %(levelname)s %(message)s', '%Y-%m-%d %H:%M:%S')
+    channel = logging.StreamHandler(sys.stdout)
+    channel.setLevel(log_level)
+    channel.setFormatter(formatter)
+    logger.addHandler(channel)
+
+   
+args = parse_arg()
+
+init_logger()
+
 nginx_log_re = '^{}$'.format(convert_to_re(nginx_log_format))
 nginx_log_pattern = re.compile(nginx_log_re)
 
-
-args = parse_arg()
-files = args.files
-
-logger = logging.getLogger(__name__)
-
-log_level = getattr(logging, args.loglevel.upper())
-
-logger.setLevel(log_level)
-
-formatter = logging.Formatter('%(asctime)s: %(levelname)s %(message)s', '%Y-%m-%d %H:%M:%S')
-channel = logging.StreamHandler(sys.stdout)
-channel.setLevel(log_level)
-channel.setFormatter(formatter)
-logger.addHandler(channel)
-
 logger.info(nginx_log_re)
 
+files = args.files
 in_files = []
 for in_file in args.files:
     for _in_file in glob.glob(in_file):
