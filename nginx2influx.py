@@ -14,9 +14,6 @@ import glob
 nginx_log_format = '''$remote_addr\t[$time_local]\t$status\t$upstream_addr\t$upstream_status\t$http_host\t$request\t$http_referer\t$http_user_agent\t$http_x_forwarded_for\t$proxy_add_x_forwarded_for\t-\t$request_time-$upstream_response_time\t$geoip_country_code'''
 
 
-
-
-
 metric_name = 'nginx_access'
 hostname = gethostname()
 
@@ -93,7 +90,6 @@ def parse_log(f, filename):
     start_time = None
     for line in f:
         parsed = nginx_log_pattern.match(line)
-        
         if parsed is None:
             logger.info('can not parse line: %s', line)
             unparsed_lines += 1
@@ -108,16 +104,19 @@ def parse_log(f, filename):
             statuses[status]['count'] += 1
             string_end_time = parsed.group('time')
             #logger.debug(parsed.groupdict())
-        
     if start_time:
         end_time = datetime.datetime.strptime(string_end_time, nginx_time_format)
         logger.info('start time in log: %s', start_time)
         logger.info('finish time in log: %s', end_time)
-
         processed_time = end_time - start_time
+        timerange = processed_time.seconds
+        print_result(statuses, timerange, filename)
+        logger.info('unparsed lines: %s' ,unparsed_lines)
+
+def print_result(statuses, timerange, filename):
         for status in statuses.keys():
-            if processed_time.seconds > 0:
-                rps = statuses[status]['count']/float(processed_time.seconds)
+            if timerange > 0:
+                rps = statuses[status]['count']/float(timerange)
             else:
                 rps = 0
             rps = round(rps, 2)
@@ -128,7 +127,6 @@ def parse_log(f, filename):
             print('{0},server={1},status={2},log_name={3} rps={4}'.format(metric_name, hostname, status, filename, rps))
             print('{0},server={1},status={2},log_name={3} avg_time={4}'.format(metric_name, hostname, status, filename, avg_time))
         logger.info(statuses)
-        logger.info('unparsed lines: %s' ,unparsed_lines)
 
 
 def parse_arg():
@@ -150,7 +148,20 @@ def init_logger():
     channel.setFormatter(formatter)
     logger.addHandler(channel)
 
-   
+ 
+def process_log(in_file):
+    logger.info('processing file: %s', in_file)
+    last_position = load_offset(in_file)
+    if os.path.getsize(in_file) < last_position:
+        # file truncated?
+        last_position = 0
+        logger.info('possible file %s rotated, reset position to zero', in_file)
+    with open(in_file) as f:
+        f.seek(last_position)
+        parse_log(f, os.path.basename(in_file))
+        current_posttion = f.tell()
+        save_offset(in_file, current_posttion)
+
 args = parse_arg()
 
 init_logger()
@@ -168,15 +179,4 @@ for in_file in args.files:
 
 
 for in_file in in_files:
-    logger.info('processing file: %s', in_file)
-    last_position = load_offset(in_file)
-    if os.path.getsize(in_file) < last_position:
-        # file truncated?
-        last_position = 0
-        logger.info('possible file %s rotated, reset position to zero', in_file)
-
-    with open(in_file) as f:
-        f.seek(last_position)
-        parse_log(f, os.path.basename(in_file))
-        save_offset(in_file, f.tell())
-
+    process_log(in_file)
