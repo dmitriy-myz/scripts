@@ -7,6 +7,7 @@ RUN apt-get update && \
     apt-get remove python-pip -y && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    rm /var/lib/apt/lists/*.lz4
+    rm /var/lib/apt/lists/*.lz4 && \
+    mkdir -p /app
 
- 
+ADD . /app
