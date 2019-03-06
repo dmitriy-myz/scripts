@@ -11,6 +11,7 @@ import ssl
 import argparse
 
 import send_mail as notify
+import send_telegram as telegram
 
 
 def ssl_expiry_days(hostname):
@@ -36,10 +37,9 @@ def domain_expiry_days(domain):
 
 
 def parse_arg():
-    parser = argparse.ArgumentParser(description='domain and ssl exipy checker.')
+    parser = argparse.ArgumentParser(description='domain and ssl expiry checker.')
     parser.add_argument('domains', type=str, help='domains to process', nargs='+')
     parser.add_argument('--check', '-c', type=str, help='check ssl or domain')
-    parser.add_argument('--recipient', '-r', type=str, help='recipient', nargs='+')
     args = parser.parse_args()
     return args
 
@@ -48,19 +48,20 @@ if __name__ == '__main__':
     args = parse_arg()
     check = args.check
     domains = args.domains
-    recipients = args.recipient
     for domain in domains:
-        if check == 'domain':
-            remaining_days = domain_expiry_days(domain)
-            msg = "domain {} expired in {} days".format(domain, remaining_days)
-        elif check == 'ssl':
-            remaining_days = ssl_expiry_days(domain)
-            msg = "ssl on {} expired in {} days".format(domain, remaining_days)
-        if remaining_days < 14:
-            print(msg)
-            for recipient in recipients:
-                print(recipient)
-                notify.send_mail(recipient, 'domain checkert alert', msg)
+        try:
+            if check == 'domain':
+                remaining_days = domain_expiry_days(domain)
+                msg = "domain {} expired in {} days".format(domain, remaining_days)
+            elif check == 'ssl':
+                remaining_days = ssl_expiry_days(domain)
+                msg = "ssl on {} expired in {} days".format(domain, remaining_days)
+            if remaining_days < 14:
+                print(msg)
+                telegram.send(msg)
 
+        except Exception as e:
+            msg = 'error while checking {}\nerror is:\n{}'.format(domain, str(e))
+            telegram.send(msg)
 
 
