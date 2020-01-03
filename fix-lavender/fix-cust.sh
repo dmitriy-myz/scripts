@@ -14,3 +14,5 @@ find -iname sign_customized_applist -exec bash -c 'echo -n > {}' \;
 echo 'remove all apk files'
 umount /mnt/lavender/cust
 echo 'run ext2simg cust.raw cust_new.img'
+
+
