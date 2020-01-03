@@ -16,16 +16,12 @@ apps=(
     com.facebook.appmanager
 
     com.google.android.marvin.talkback
-    com.google.android.partnersetup
-    com.google.android.apps.turbo
     com.google.android.apps.tachyon
     com.google.android.videos
     com.google.android.music
     com.google.android.apps.photos
-    com.google.android.gsf
 
 
-    com.dsi.ant.server
     com.miui.bugreport
     com.xiaomi.joyose
     com.android.wallpaperbackup
