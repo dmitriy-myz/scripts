@@ -10,6 +10,7 @@ apt install -y pass
 apt purge -y snapd gnome-software-plugin-snap
 # remove spyware
 apt purge -y ubuntu-report popularity-contest apport whoopsie
+apt autoremove -y
 
 apt install -y atop
 
