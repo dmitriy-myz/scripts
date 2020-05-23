@@ -18,6 +18,6 @@ systemctl mask atop atopacct
 rm /etc/cron.d/atop
 
 
-cp "$(dirname $0)/etc/vim/*" "/etc/vim/"
+cp "$(dirname $0)/etc/vim/vimrc.local" "/etc/vim/"
 mv "/root/.bashrc" "/root/.bashrc-$(date +%s)"
 cp "$(dirname $0)/root/bashrc" "/root/.bashrc"
