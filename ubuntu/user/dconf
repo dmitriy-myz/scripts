@@ -1,0 +1,36 @@
+[org/gnome/shell]
+enable-hot-corners=true
+
+[org/gnome/desktop/peripherals/touchpad]
+natural-scroll=false
+speed=0.050359712230215736
+edge-scrolling-enabled=false
+two-finger-scrolling-enabled=true
+tap-to-click=true
+
+[org/gnome/desktop/peripherals/mouse]
+natural-scroll=false
+speed=-0.1151079136690647
+
+[org/gnome/desktop/calendar]
+show-weekdate=true
+
+[org/gnome/desktop/input-sources]
+per-window=true
+sources=[('xkb', 'us'), ('xkb', 'ru')]
+mru-sources=[('xkb', 'us'), ('xkb', 'ru')]
+xkb-options=['grp_led:scroll', 'grp:caps_toggle']
+
+[org/gnome/desktop/wm/keybindings]
+switch-input-source-backward=['<Shift><Super>space']
+switch-input-source=['<Super>space']
+
+[org/gnome/desktop/interface]
+clock-show-date=true
+gtk-im-module='gtk-im-context-simple'
+enable-animations=false
+show-battery-percentage=true
+
+[org/gtk/settings/file-chooser]
+show-hidden=true
+

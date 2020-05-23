@@ -31,12 +31,11 @@ apps=(
     com.xiaomi.miplay_client
     cn.wps.xiaomi.abroad.lite
     com.xiaomi.micloud.sdk
+    com.xiaomi.xmsf
     com.xiaomi.payment
     com.xiaomi.mirecycle
-    com.fido.xiaomi.uafclient
     com.xiaomi.powerchecker
     com.xiaomi.glgm
-    com.xiaomi.xmsf
     com.xiaomi.mipicks
     com.xiaomi.midrop
     com.xiaomi.providers.appindex
@@ -44,9 +43,6 @@ apps=(
     com.xiaomi.mi_connect_service
 
     )
-    com.miui.securityadd
-    com.miui.securitycenter
-    com.lbe.security.miui
 
 echo 'can be deleted:
     com.qualcomm.wfd.service wifi direct
