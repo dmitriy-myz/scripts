@@ -30,6 +30,9 @@ clock-show-date=true
 gtk-im-module='gtk-im-context-simple'
 enable-animations=false
 show-battery-percentage=true
+clock-show-weekday=true
+enable-animations=false
+enable-hot-corners=true
 
 [org/gtk/settings/file-chooser]
 show-hidden=true
