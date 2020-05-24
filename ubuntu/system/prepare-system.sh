@@ -18,6 +18,11 @@ systemctl stop atop atopacct
 systemctl mask atop atopacct
 rm /etc/cron.d/atop
 
+apt install -y curl
+
+apt install -y openjdk-11-jdk python3-venv
+
+
 
 cp "$(dirname $0)/etc/vim/vimrc.local" "/etc/vim/"
 mv "/root/.bashrc" "/root/.bashrc-$(date +%s)"
