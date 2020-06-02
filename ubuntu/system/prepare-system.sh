@@ -20,7 +20,7 @@ rm /etc/cron.d/atop
 
 apt install -y curl
 
-apt install -y openjdk-11-jdk python3-venv
+apt install -y openjdk-11-jdk python3-venv python3-dev
 
 
 
