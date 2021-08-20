@@ -2,6 +2,11 @@ import nmap
 import json
 from subprocess import call
 import sys
+
+def alert(msg):
+    call(['bash', 'send_msg.sh', msg])
+#call(['python', 'alert.py', 'email@test.com', 'You have too many open ports', msg]) 
+
 short_scan = False
 if len(sys.argv) > 1:
     short_scan = (sys.argv[1] == 'short')
@@ -12,7 +17,7 @@ with open('config.json', 'r') as f:
 
 with open('hosts.json', 'r') as f:
     hosts = json.load(f)
-    hosts.sort()
+    hosts = sorted(hosts)
 
 allowed_ports = config['allowed_ports']
 allowed_host_n_ports = config['allowed_host_n_ports']
@@ -31,9 +36,7 @@ else:
 
 args = '-Pn -sT --exclude %s' % ignore_hosts
 
-def alert(msg):
-    call(['python', 'alert.py', 'email@test.com', 'You have too many open ports', msg])
-    
+   
 nm = nmap.PortScanner()
 nm.scan(hosts_list, ports, arguments = args)
 #print nm.command_line() 
