@@ -11,6 +11,7 @@ vim config.json
 
 
 add to crontab:
-`python3 discovery_hosts.py`
 
-`python3 scan_hosts.py`
+`python3 scan_hosts.py --scan_type=discovery`
+`python3 scan_hosts.py --scan_type=short`
+`python3 scan_hosts.py --scan_type=full`
