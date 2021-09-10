@@ -101,7 +101,7 @@ def parse_log(f, filename):
             status = parsed.group('status')
             if status not in statuses:
                 statuses[status] = {'time': 0.0, 'count': 0}
-            #statuses[status]['time'] += float(parsed.group('request_time'))
+            statuses[status]['time'] += float(parsed.group('upstream_response_time'))
             statuses[status]['count'] += 1
             string_end_time = parsed.group('time')
             #logger.debug(parsed.groupdict())
@@ -121,12 +121,12 @@ def print_result(statuses, timerange, filename):
             else:
                 rps = 0
             rps = round(rps, 2)
-            #avg_time = statuses[status]['time']/statuses[status]['count']
-            #avg_time = round(avg_time,3)
+            avg_time = statuses[status]['time']/statuses[status]['count']
+            avg_time = round(avg_time,3)
             statuses[status]['rps'] = rps
-            #statuses[status]['avg_time'] = avg_time
+            statuses[status]['avg_time'] = avg_time
             print('{0},server={1},status={2},log_name={3} rps={4}'.format(metric_name, hostname, status, filename, rps))
-            #print('{0},server={1},status={2},log_name={3} avg_time={4}'.format(metric_name, hostname, status, filename, avg_time))
+            print('{0},server={1},status={2},log_name={3} avg_time={4}'.format(metric_name, hostname, status, filename, avg_time))
         logger.info(statuses)
 
 
