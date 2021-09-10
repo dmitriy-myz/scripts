@@ -11,8 +11,8 @@ import glob
 
 
 # replace this with your nginx log format string
-nginx_log_format = '''$remote_addr\t[$time_local]\t$status\t$upstream_addr\t$upstream_status\t$http_host\t$request\t$http_referer\t$http_user_agent\t$http_x_forwarded_for\t$proxy_add_x_forwarded_for\t-\t$request_time-$upstream_response_time\t$geoip_country_code'''
 
+nginx_log_format = '''$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent $upstream_response_time "$http_referer" "$http_user_agent" "$http_x_forwarded_for" "$host" "$request_length"'''
 
 metric_name = 'nginx_access'
 hostname = gethostname()
@@ -44,7 +44,8 @@ nginx_spec_values = {
   '$geoip_country_code': '((?P<geoip_country_code>\w+)|-)',
   '$remote_user': '((?P<remote_user>\w+)|-)',
   '$body_bytes_sent': '((?P<body_bytes_sent>\d+)|-)',
-  '$upstream_cache_status': '(?P<upstream_cache_status>(MISS|BYPASS|EXPIRED|STALE|UPDATING|REVALIDATED|HIT|-))'
+  '$upstream_cache_status': '(?P<upstream_cache_status>(MISS|BYPASS|EXPIRED|STALE|UPDATING|REVALIDATED|HIT|-))',
+  '$request_length': '((?P<request_length>\d+)|-)',
 
 }
 
@@ -100,7 +101,7 @@ def parse_log(f, filename):
             status = parsed.group('status')
             if status not in statuses:
                 statuses[status] = {'time': 0.0, 'count': 0}
-            statuses[status]['time'] += float(parsed.group('request_time'))
+            #statuses[status]['time'] += float(parsed.group('request_time'))
             statuses[status]['count'] += 1
             string_end_time = parsed.group('time')
             #logger.debug(parsed.groupdict())
@@ -120,12 +121,12 @@ def print_result(statuses, timerange, filename):
             else:
                 rps = 0
             rps = round(rps, 2)
-            avg_time = statuses[status]['time']/statuses[status]['count']
-            avg_time = round(avg_time,3)
+            #avg_time = statuses[status]['time']/statuses[status]['count']
+            #avg_time = round(avg_time,3)
             statuses[status]['rps'] = rps
-            statuses[status]['avg_time'] = avg_time
+            #statuses[status]['avg_time'] = avg_time
             print('{0},server={1},status={2},log_name={3} rps={4}'.format(metric_name, hostname, status, filename, rps))
-            print('{0},server={1},status={2},log_name={3} avg_time={4}'.format(metric_name, hostname, status, filename, avg_time))
+            #print('{0},server={1},status={2},log_name={3} avg_time={4}'.format(metric_name, hostname, status, filename, avg_time))
         logger.info(statuses)
 
 
