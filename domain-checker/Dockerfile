@@ -3,7 +3,7 @@ MAINTAINER Dmitry Muzyka
 
 RUN apt-get update && \
     apt-get install -y python python-pip && \
-    pip install pythonwhois && \
+    pip install python-whois && \
     apt-get remove python-pip -y && \
     apt-get autoremove -y && \
     apt-get clean -y && \

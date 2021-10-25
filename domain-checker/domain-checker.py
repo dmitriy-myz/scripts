@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import pythonwhois
+import whois
 import datetime
 import sys
 import os
@@ -29,9 +29,8 @@ def ssl_expiry_days(hostname):
     return (not_after - datetime.datetime.now()).days
 
 def domain_expiry_days(domain):
-    data, server_list = pythonwhois.net.get_whois_raw(domain, with_server_list=True)
-    parsed = pythonwhois.parse.parse_raw_whois(data, normalized=True, never_query_handles=False, handle_server=server_list[-1])
-    expiration_date = parsed['expiration_date'][0]
+    data = whois.whois(domain)
+    expiration_date = data.expiration_date
     return (expiration_date - datetime.datetime.now()).days
 
 
