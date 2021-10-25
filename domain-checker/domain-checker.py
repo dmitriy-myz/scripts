@@ -5,6 +5,7 @@ import whois
 import datetime
 import sys
 import os
+import time
 
 import socket
 import ssl
@@ -32,6 +33,7 @@ def ssl_expiry_days(hostname):
 def domain_expiry_days(domain):
     data = whois.whois(domain)
     expiration_date = data.expiration_date
+    print("{} expired {}".format(domain,expiration_date))
     return (expiration_date - datetime.datetime.now()).days
 
 
@@ -58,7 +60,7 @@ if __name__ == '__main__':
             if remaining_days < 14:
                 print(msg)
                 telegram.send(msg)
-
+            time.sleep(1)
         except Exception as e:
             msg = 'error while checking {}\nerror is:\n{}'.format(domain, str(e))
             telegram.send(msg)
