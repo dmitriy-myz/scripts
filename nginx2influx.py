@@ -101,7 +101,7 @@ def parse_log(f, filename):
             status = parsed.group('status')
             if status not in statuses:
                 statuses[status] = {'time': 0.0, 'count': 0}
-            statuses[status]['time'] += float(parsed.group('upstream_response_time'))
+            statuses[status]['time'] += float(parsed.group('request_time'))
             statuses[status]['count'] += 1
             string_end_time = parsed.group('time')
             #logger.debug(parsed.groupdict())
