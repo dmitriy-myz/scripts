@@ -33,6 +33,8 @@ def ssl_expiry_days(hostname):
 def domain_expiry_days(domain):
     data = whois.whois(domain)
     expiration_date = data.expiration_date
+    if type(expiration_date) == list:
+        expiration_date = expiration_date[0]
     print("{} expired {}".format(domain,expiration_date))
     return (expiration_date - datetime.datetime.now()).days
 
