@@ -133,7 +133,7 @@ def print_result(statuses, timerange, nginx_host, times):
                     },
                     "time": datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
                     "fields": {
-                        "rps": int(rps),
+                        "rps": float(rps),
                         "avg_time": round(avg_time, 3),
                         "bytes_send": bytes_send,
                         "bytes_received": bytes_received,
